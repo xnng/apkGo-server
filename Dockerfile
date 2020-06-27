@@ -2,6 +2,8 @@ FROM ubuntu:18.04
 
 LABEL author="xnng <xnng77@gmail.com>"
 
+ENV GRADLE_VERSION=5.4.1
+
 SHELL ["/bin/bash", "-c"]
 
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak \
@@ -18,28 +20,31 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak \
   && apt update && apt upgrade -y \
   # 安装必要工具
   && apt install wget unzip -y \
-  # 安装gradle
-  && wget https://downloads.gradle-dn.com/distributions/gradle-5.4.1-bin.zip \
+  # 安装 gradle
+  && wget https://downloads.gradle-dn.com/distributions/gradle-${GRADLE_VERSION}-bin.zip \
   && mkdir /opt/gradle \
-  && unzip -d /opt/gradle gradle-5.4.1-bin.zip \
-  && echo export PATH=$PATH:/opt/gradle/gradle-5.4.1/bin >> /etc/profile \
+  && unzip -d /opt/gradle gradle-${GRADLE_VERSION}-bin.zip \
+  && rm gradle-${GRADLE_VERSION}-bin.zip \
+  && echo export PATH=$PATH:/opt/gradle/gradle-${GRADLE_VERSION}/bin >> /etc/profile \
   && source /etc/profile \
-  # 安装jdk
+  # 安装 jdk
   && apt install openjdk-8-jdk -y \
   && echo export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 >> /etc/profile \
   && source /etc/profile \
-  # 安装android sdk
+  # 安装 android sdk
   && mkdir -p /androidsdk \
   && cd /androidsdk \
   && wget https://dl.google.com/android/repository/commandlinetools-linux-6514223_latest.zip \
   && unzip commandlinetools-linux-6514223_latest.zip \
+  && rm commandlinetools-linux-6514223_latest.zip \
   && echo export PATH=$PATH:/androidsdk/tools:/androidsdk/tools/bin >> /etc/profile \
   && echo export ANDROID_HOME=/androidsdk >> /etc/profile \
   && source /etc/profile \
   && yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses \
-  && sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools" "platforms;android-28"
+  && sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools" "platforms;android-28" \
+  && echo source /etc/profile >> ~/.bashrc
 
-# 安装nginx保持后台进程
+# 安装 nginx 保持后台进程
 RUN apt install -y nginx
 
 EXPOSE 80
