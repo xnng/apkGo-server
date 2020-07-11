@@ -21,7 +21,7 @@
         <img :src="fileInfo.icon" />
         <el-form class="form" label-position="right" label-width="80px" size="small">
           <el-form-item label="包名：">
-            <span>{{fileInfo.package}}</span>
+            <span>{{fileInfo.packageName}}</span>
           </el-form-item>
           <el-form-item label="当前版本">
             <span>{{fileInfo.versionName}}（Build {{fileInfo.versionCode}}）</span>
@@ -77,7 +77,7 @@ export default {
         versionCode: '',
         versionName: '',
         icon: '',
-        package: '',
+        packageName: '',
         name: ''
       }
     }
@@ -88,27 +88,31 @@ export default {
     },
     async upload () {
       const uploadFile = this.cacheFile
-      const sinResult = await getOssSin()
-      const { ossId, policy, signature, fileName, host } = sinResult.data
-
-      const formData = new FormData()
-      formData.append('OSSAccessKeyId', ossId)
-      formData.append('policy', policy)
-      formData.append('signature', signature)
-      formData.append('key', fileName)
-      formData.append('success_action_status', 200)
-      formData.append('file', uploadFile)
-      console.log('upload -> this.progress', this.progress)
-      this.progress = 0
-      console.log('upload -> this.progress', this.progress)
-      await request(host, {
-        method: 'post',
-        data: formData,
-        onUploadProgress: progressEvent => {
-          const complete = Math.floor((progressEvent.loaded / progressEvent.total) * 100)
-          this.progress = complete
-        }
+      const sinResult = await getOssSin({
+        ...this.fileInfo
       })
+
+      if (sinResult.data.code === 0) {
+        const { ossId, policy, signature, fileName, host } = sinResult.data.data
+        const formData = new FormData()
+        formData.append('OSSAccessKeyId', ossId)
+        formData.append('policy', policy)
+        formData.append('signature', signature)
+        formData.append('key', fileName)
+        formData.append('success_action_status', 200)
+        formData.append('file', uploadFile)
+        this.progress = 0
+        await request(host, {
+          method: 'post',
+          data: formData,
+          onUploadProgress: progressEvent => {
+            const complete = Math.floor((progressEvent.loaded / progressEvent.total) * 100)
+            this.progress = complete
+          }
+        })
+      } else {
+        throw new Error(sinResult.data.msg || '获取签名失败')
+      }
     },
     async parseFile () {
       const parser = new AppInfoParser(this.cacheFile)
@@ -117,7 +121,7 @@ export default {
         versionCode: apkInfo.versionCode,
         versionName: apkInfo.versionName,
         icon: apkInfo.icon,
-        package: apkInfo.package,
+        packageName: apkInfo.package,
         name: apkInfo.application.label[0]
       }
       this.uploadModalVisible = true
