@@ -7,3 +7,10 @@ export function getOssSin (data) {
     url: '/getPolicy'
   })
 }
+
+export function getAppList () {
+  return request({
+    method: 'get',
+    url: '/getAppList'
+  })
+}

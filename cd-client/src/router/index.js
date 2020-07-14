@@ -7,7 +7,11 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    component: () => import('../views/upload')
+    component: () => import('../views/home')
+  },
+  {
+    path: '/release',
+    component: () => import('../views/release')
   }
 ]
 

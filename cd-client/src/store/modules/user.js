@@ -1,5 +1,3 @@
-import {} from '@/api/user'
-
 const initialState = {}
 
 const state = {
