@@ -18,6 +18,11 @@ const AppVersion = sequelize.define(
       notNull: true,
       comment: '包名',
     },
+    fileName: {
+      type: Sequelize.STRING,
+      notNull: true,
+      comment: '下载链接',
+    },
     downLoadCount: {
       type: Sequelize.BIGINT,
       defaultValue: 0,
