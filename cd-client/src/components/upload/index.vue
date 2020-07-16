@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <el-upload
       drag
       action
@@ -16,21 +16,27 @@
         <em>点击上传</em>
       </div>
     </el-upload>
-    <el-dialog width="700px" :title="fileInfo.name" :visible.sync="uploadModalVisible">
-      <div class="app" v-loading="uploadModalLoading">
+    <el-dialog
+      width="700px"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :show-close="!uploadModalLoading"
+      :title="fileInfo.name"
+      :visible.sync="uploadModalVisible"
+      @close="closeDialog"
+      @click="closeDialog"
+    >
+      <div class="app" v-loading="uploadModalLoading" element-loading-text="上传中，请稍后...">
         <img :src="fileInfo.icon" />
-        <el-form class="form" label-position="right" label-width="80px" size="small">
+        <el-form class="form" label-position="right" label-width="85px" size="small">
           <el-form-item label="包名：">
             <span>{{fileInfo.packageName}}</span>
           </el-form-item>
-          <el-form-item label="当前版本">
+          <el-form-item label="当前版本：">
             <span>{{fileInfo.versionName}}（Build {{fileInfo.versionCode}}）</span>
           </el-form-item>
-          <el-form-item required label="短链接">
-            <el-input v-model="form.prevUrl" placeholder="请输入短链接" />
-          </el-form-item>
-          <el-form-item label="更新内容">
-            <el-input type="textarea" v-model="form.updateText" :rows="3" placeholder="请输入内容"></el-input>
+          <el-form-item label="更新日志：">
+            <el-input type="textarea" v-model="form.updateText" :rows="5" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -55,7 +61,7 @@
 </template>
 
 <script>
-import { getOssSin } from '@/api/user'
+import { getOssSin } from '@/api/app'
 import AppInfoParser from 'app-info-parser'
 import request from '@/api/request'
 
@@ -83,36 +89,11 @@ export default {
     }
   },
   methods: {
+    closeDialog () {
+      this.uploadStatus = 'none'
+    },
     setModal1Visible (modal1Visible) {
       this.modal1Visible = modal1Visible
-    },
-    async upload () {
-      const uploadFile = this.cacheFile
-      const sinResult = await getOssSin({
-        ...this.fileInfo
-      })
-
-      if (sinResult.data.code === 0) {
-        const { ossId, policy, signature, fileName, host } = sinResult.data.data
-        const formData = new FormData()
-        formData.append('OSSAccessKeyId', ossId)
-        formData.append('policy', policy)
-        formData.append('signature', signature)
-        formData.append('key', fileName)
-        formData.append('success_action_status', 200)
-        formData.append('file', uploadFile)
-        this.progress = 0
-        await request(host, {
-          method: 'post',
-          data: formData,
-          onUploadProgress: progressEvent => {
-            const complete = Math.floor((progressEvent.loaded / progressEvent.total) * 100)
-            this.progress = complete
-          }
-        })
-      } else {
-        throw new Error(sinResult.data.msg || '获取签名失败')
-      }
     },
     async parseFile () {
       const parser = new AppInfoParser(this.cacheFile)
@@ -135,23 +116,45 @@ export default {
         this.uploadModalVisible = true
       }
     },
-    checkInfo () {
-      if (!this.form.prevUrl) {
-        this.$message.warning('请填写短链接')
-        return false
-      } else {
-        return true
-      }
-    },
     async submitUpload () {
-      if (!this.checkInfo()) return
       this.uploadModalLoading = true
 
       this.uploadStatus = 'none'
       try {
-        await this.upload()
-        this.uploadStatus = 'success'
-        this.$message.success('上传成功！')
+        const uploadFile = this.cacheFile
+        const sinResult = await getOssSin({
+          ...this.fileInfo
+        })
+
+        if (sinResult.data.code === 0) {
+          const { ossId, policy, signature, fileName, host, callback } = sinResult.data.data
+          const formData = new FormData()
+          formData.append('OSSAccessKeyId', ossId)
+          formData.append('policy', policy)
+          formData.append('signature', signature)
+          formData.append('callback', callback)
+          formData.append('key', fileName)
+          formData.append('success_action_status', 200)
+          formData.append('file', uploadFile)
+          this.progress = 0
+          const uploadResult = await request(host, {
+            method: 'post',
+            data: formData,
+            onUploadProgress: progressEvent => {
+              const complete = Math.floor((progressEvent.loaded / progressEvent.total) * 100)
+              this.progress = complete
+            }
+          })
+          if (uploadResult.data.code === 0) {
+            this.uploadStatus = 'success'
+            this.$message.success('上传成功！')
+            this.$emit('uploadSuccess')
+          } else {
+            throw new Error(uploadResult.data.msg || '上传失败')
+          }
+        } else {
+          throw new Error(sinResult.data.msg || '获取签名失败')
+        }
       } catch (err) {
         this.$message.error(err.message)
       } finally {
@@ -163,18 +166,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  position: relative;
-  min-height: 100vh;
-  background: #f8f8f8;
-  width: 100vw;
-  .upload {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-}
 .app {
   display: flex;
   align-items: flex-start;
