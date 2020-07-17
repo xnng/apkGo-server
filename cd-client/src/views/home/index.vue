@@ -6,10 +6,21 @@
     <el-divider></el-divider>
     <div class="card-container" v-loading="loading">
       <div class="card" v-for="item of appList" :key="item.id">
-        <img :src="item.icon" />
-        <div class="card-content">
-          <div class="card-title">{{item.name}}</div>
-          <div class="card-info">BundleID：{{item.packageName}}</div>
+        <img class="card-logo" :src="item.icon" />
+        <div class="card-name">{{item.name}}</div>
+        <div class="card-desc">
+          包名：
+          <span class="card-desc-value">{{item.packageName}}</span>
+        </div>
+        <div class="card-desc">
+          最新版本：
+          <span
+            class="card-desc-value"
+          >{{item.app_versions[0].versionName}}（Build {{item.app_versions[0].versionCode}}）</span>
+        </div>
+        <div class="card-desc">
+          总下载次数：
+          <span class="card-desc-value">{{item.downLoadCount}}</span>
         </div>
       </div>
     </div>
@@ -75,32 +86,40 @@ export default {
   box-sizing: border-box;
 }
 .card {
-  width: 350px;
-  height: 140px;
+  width: 300px;
   cursor: pointer;
   padding: 10px;
   margin: 10px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #eee5e5;
   background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
   box-sizing: border-box;
-  border-radius: 15px;
-  & > img {
+  transition: all 0.3s;
+  box-shadow: 0 0 5px 0 #e7e5e5;
+  &:hover {
+    transform: translate3d(0, -5px, 0);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+  &-logo {
+    border-radius: 15px;
     width: 100px;
     height: 100px;
   }
-  &-content {
-    margin-left: 10px;
+  &-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 20px 0;
   }
-  &-title {
-    font-size: 22px;
-  }
-  &-info {
-    margin-top: 10px;
-    font-size: 16px;
-    color: #666;
+  &-desc {
+    margin: 1px 0;
+    word-break: break-all;
+    font-size: 14px;
+    color: #999;
+    &-value {
+      font-size: 12px;
+      color: #666;
+    }
   }
 }
 </style>

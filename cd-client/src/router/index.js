@@ -10,7 +10,7 @@ const routes = [
     component: () => import('../views/home')
   },
   {
-    path: '/release',
+    path: '/release/:id',
     component: () => import('../views/release')
   }
 ]
