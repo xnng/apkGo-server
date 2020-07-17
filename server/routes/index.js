@@ -7,23 +7,44 @@ const AppVersion = require('../models/appVersion')
 
 let queue = []
 
-router.post('/getPolicy', async (req, res) => {
-  const { packageName, versionCode, versionName, updateText, icon, name } = req.body
 
+router.get('/getAppList', async (req, res) => {
+  AppList.hasMany(AppVersion, { foreignKey: 'packageName', sourceKey: 'packageName' })
+  AppVersion.belongsTo(AppList, { foreignKey: 'packageName', targetKey: 'packageName' })
+  try {
+    const data = await AppList.findAll({
+      order: [['createdAt', 'DESC']],
+      include: [
+        {
+          model: AppVersion,
+          limit: 1,
+          order: [['versionCode', 'DESC']],
+          attributes: ['id', 'versionCode', 'versionName']
+        }
+      ]
+    })
+    res.json({ code: 0, data })
+  } catch (error) {
+    res.json({ code: 1, msg: error.message })
+  }
+})
+
+router.post('/getPolicy', async (req, res) => {
+  const { packageName, versionName } = req.body
   const oldVersion = await AppVersion.findOne({ where: { packageName, versionName } })
   if (oldVersion) {
     res.json({ code: -1, msg: '存在重复版本' })
   }
 
   const sessionKey = uuidv4()
-  queue.push({ sessionKey, packageName, versionCode, versionName, updateText, icon, name })
+  queue.push({ ...req.body, sessionKey })
 
   res.json({ code: 0, data: generageSin(sessionKey) })
 })
 
 router.post('/uploadCallback', async (req, res) => {
   const cacheQuery = queue.find(item => item.sessionKey === req.body.sessionKey)
-  const { packageName, versionCode, versionName, name, updateText, icon, fileName } = cacheQuery
+  const { packageName, versionCode, versionName, name, updateText, icon, downloadUrl } = cacheQuery
 
   try {
     const oldApp = await AppList.findOne({ where: { packageName } })
@@ -37,10 +58,10 @@ router.post('/uploadCallback', async (req, res) => {
       if (oldVersion) {
         res.json({ code: -1, msg: '存在重复版本' })
       }
-      await AppVersion.create({ packageName, versionCode, versionName, updateText, fileName })
+      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
     } else {
       await AppList.create({ packageName, icon, name, urlKey: await getUrlKey() })
-      await AppVersion.create({ packageName, versionCode, versionName, updateText, fileName })
+      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
     }
 
     res.json({ code: 0 })
@@ -77,10 +98,11 @@ function generageSin(sessionKey) {
   const signature = crypto.createHmac('sha1', ossKey).update(policy).digest('base64')
   const fileName = `${cloudBasePath}${new Date().getTime()}.apk`
 
-  queue.find(item => item.sessionKey === sessionKey).fileName = `${host}/${fileName}`
+  // todo 纯函数
+  queue.find(item => item.sessionKey === sessionKey).downloadUrl = `${host}/${fileName}`
 
   const callbackStr = {
-    callbackUrl: "http://ali.xnngs.cn:3001/uploadCallback",
+    callbackUrl: "http://ali.xnngs.cn:3003/uploadCallback",
     callbackBody: `sessionKey=${sessionKey}`,
     callbackBodyType: "application/x-www-form-urlencoded"
   }

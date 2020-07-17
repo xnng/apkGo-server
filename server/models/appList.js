@@ -21,7 +21,7 @@ const AppList = sequelize.define(
       comment: '下载次数',
     },
     icon: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT('long'),
       notNull: true,
       comment: '图标',
     },

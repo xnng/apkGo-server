@@ -18,7 +18,7 @@ const AppVersion = sequelize.define(
       notNull: true,
       comment: '包名',
     },
-    fileName: {
+    downloadUrl: {
       type: Sequelize.STRING,
       notNull: true,
       comment: '下载链接',
