@@ -4,13 +4,13 @@ export function getOssSin (data) {
   return request({
     method: 'post',
     data,
-    url: '/getPolicy'
+    url: '/upload/getPolicy'
   })
 }
 
 export function getAppList () {
   return request({
     method: 'get',
-    url: '/getAppList'
+    url: '/upload/getAppList'
   })
 }

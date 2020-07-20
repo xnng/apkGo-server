@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const sequelize = require('./models/index')
 const bodyParser = require('body-parser')
-const index = require('./routes/index')
+const upload = require('./routes/upload')
 
 const app = express()
 
@@ -19,5 +19,5 @@ app.use(cors({ credentials: true, origin: '*' }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use('/', index)
+app.use('/upload', upload)
 app.listen(3003)

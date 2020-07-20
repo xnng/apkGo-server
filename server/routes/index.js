@@ -1,12 +1,10 @@
 const router = require('express').Router()
-const crypto = require('crypto')
-const ids = require('short-id')
-const { v4: uuidv4 } = require('uuid')
 const AppList = require('../models/appList')
 const AppVersion = require('../models/appVersion')
+const crypto = require('crypto')
+const ids = require('short-id')
 
-let queue = []
-
+const queue = []
 
 router.get('/getAppList', async (req, res) => {
   AppList.hasMany(AppVersion, { foreignKey: 'packageName', sourceKey: 'packageName' })
@@ -29,19 +27,6 @@ router.get('/getAppList', async (req, res) => {
   }
 })
 
-router.post('/getPolicy', async (req, res) => {
-  const { packageName, versionName } = req.body
-  const oldVersion = await AppVersion.findOne({ where: { packageName, versionName } })
-  if (oldVersion) {
-    res.json({ code: -1, msg: '存在重复版本' })
-  }
-
-  const sessionKey = uuidv4()
-  queue.push({ ...req.body, sessionKey })
-
-  res.json({ code: 0, data: generageSin(sessionKey) })
-})
-
 router.post('/uploadCallback', async (req, res) => {
   const cacheQuery = queue.find(item => item.sessionKey === req.body.sessionKey)
   const { packageName, versionCode, versionName, name, updateText, icon, downloadUrl } = cacheQuery
@@ -60,7 +45,7 @@ router.post('/uploadCallback', async (req, res) => {
       }
       await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
     } else {
-      await AppList.create({ packageName, icon, name, urlKey: await getUrlKey() })
+      await AppList.create({ packageName, icon, name })
       await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
     }
 
@@ -70,7 +55,7 @@ router.post('/uploadCallback', async (req, res) => {
   }
 })
 
-async function getUrlKey() {
+async function getUrlKey () {
   const newKey = ids.generate()
   const isExistSameKey = await AppList.findOne({ where: { urlKey: newKey } })
   console.log('isExistSameKey', isExistSameKey)
@@ -81,7 +66,7 @@ async function getUrlKey() {
   }
 }
 
-function generageSin(sessionKey) {
+function generageSin (sessionKey) {
   const { ossId, ossKey, host, cloudBasePath } = require('../config/app').oss
 
   const expiration = new Date(new Date().getTime() + 10 * 1000).toISOString()
@@ -90,8 +75,8 @@ function generageSin(sessionKey) {
     expiration,
     conditions: [
       ['content-length-range', 0, fileMaxSize],
-      ['starts-with', '$key', cloudBasePath],
-    ],
+      ['starts-with', '$key', cloudBasePath]
+    ]
   }
 
   const policy = Buffer.from(JSON.stringify(policyString)).toString('base64')
@@ -102,9 +87,9 @@ function generageSin(sessionKey) {
   queue.find(item => item.sessionKey === sessionKey).downloadUrl = `${host}/${fileName}`
 
   const callbackStr = {
-    callbackUrl: "http://ali.xnngs.cn:3003/uploadCallback",
+    callbackUrl: 'http://ali.xnngs.cn:3003/uploadCallback',
     callbackBody: `sessionKey=${sessionKey}`,
-    callbackBodyType: "application/x-www-form-urlencoded"
+    callbackBodyType: 'application/x-www-form-urlencoded'
   }
   const callbackBase64 = Buffer.from(JSON.stringify(callbackStr)).toString('base64')
 
