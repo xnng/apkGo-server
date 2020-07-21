@@ -12,7 +12,7 @@
           包名：
           <span class="card-desc-value">{{item.packageName}}</span>
         </div>
-        <div class="card-desc">
+        <div class="card-desc" v-if="item.app_versions.length !== 0">
           最新版本：
           <span
             class="card-desc-value"
@@ -22,19 +22,79 @@
           总下载次数：
           <span class="card-desc-value">{{item.downLoadCount}}</span>
         </div>
+        <div class="card-btn">
+          <el-button
+            size="mini"
+            plain
+            type="primary"
+            icon="el-icon-document"
+            @click="showHistory(item)"
+            :loading="historyBtnLoading"
+          >历史版本</el-button>
+          <el-button size="mini" plain type="success" icon="el-icon-view">预览</el-button>
+        </div>
       </div>
     </div>
+    <el-dialog
+      :title="cacheName"
+      :visible.sync="showHistoryDialog"
+      width="800px"
+      v-loading="versionLoading"
+    >
+      <el-table :data="versionList">
+        <el-table-column property="version" align="center" label="版本号" width="160"></el-table-column>
+        <el-table-column property="downLoadCount" align="center" label="下载次数" width="100"></el-table-column>
+        <el-table-column property="updateText" align="center" label="更新日志"></el-table-column>
+        <el-table-column property="createTime" align="center" label="创建时间" width="170"></el-table-column>
+        <el-table-column fixed="right" align="center" label="操作" width="80" property="address">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              icon="el-icon-download"
+              @click="handleDelete(scope.row.id)"
+            >下载</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination
+          hide-on-single-page
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 30,40,50]"
+          :page-size="pagination.limit"
+          layout="total, sizes, prev, pager, next"
+          :total="400"
+        ></el-pagination>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import upload from '@/components/upload'
-import { getAppList } from '@/api/app'
+import { getAppList, getVersionList } from '@/api/app'
+import dayjs from 'dayjs'
+
 export default {
   components: { upload },
   data () {
     return {
+      showHistoryDialog: false,
+      cachePackageName: '',
+      cacheName: '',
+      currentPage: '1',
+      pagination: {
+        offset: 0,
+        limit: 10
+      },
+      versionList: [],
       loading: false,
+      historyBtnLoading: false,
+      versionLoading: false,
       appList: []
     }
   },
@@ -42,6 +102,38 @@ export default {
     this.fetchAppList()
   },
   methods: {
+    async showHistory (item) {
+      this.cachePackageName = item.packageName
+      this.cacheName = item.name
+      this.pagination.offset = 0
+      this.historyBtnLoading = true
+
+      try {
+        await this.fetchVersionList()
+      } finally {
+        this.historyBtnLoading = false
+        this.showHistoryDialog = true
+      }
+    },
+    async fetchVersionList () {
+      this.versionLoading = true
+      try {
+        const list = await getVersionList({
+          packageName: this.cachePackageName,
+          ...this.pagination
+        })
+        if (list.data.code === 0) {
+          this.versionList = list.data.data.map(item => ({
+            ...item,
+            updateText: item.updateText ? item.updateText : '--',
+            version: `${item.versionName}（Build ${item.versionCode}）`,
+            createTime: dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss')
+          }))
+        }
+      } finally {
+        this.versionLoading = false
+      }
+    },
     refresh () {
       this.fetchAppList()
     },
@@ -121,5 +213,16 @@ export default {
       color: #666;
     }
   }
+  &-btn {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 10px;
+  }
+}
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 </style>

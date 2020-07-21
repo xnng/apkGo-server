@@ -11,6 +11,14 @@ export function getOssSin (data) {
 export function getAppList () {
   return request({
     method: 'get',
-    url: '/upload/getAppList'
+    url: '/list/getAppList'
+  })
+}
+
+export function getVersionList (params) {
+  return request({
+    method: 'get',
+    params,
+    url: '/list/getVersionList'
   })
 }

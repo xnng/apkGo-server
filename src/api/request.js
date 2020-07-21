@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const request = axios.create({
   // baseURL: 'https://service-52prhkko-1254232777.gz.apigw.tencentcs.com/release',
-  baseURL: 'https://service-52prhkko-1254232777.gz.apigw.tencentcs.com/release',
+  baseURL: 'http://ali.xnngs.cn:3003',
   timeout: 50 * 1000
 })
 
