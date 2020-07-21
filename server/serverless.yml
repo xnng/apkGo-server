@@ -1,3 +1,6 @@
+# https://github.com/serverless-components/tencent-express/blob/master/docs/configure.md
+# https://cloud.tencent.com/document/product/1154/41775
+# https://serverless.cloud.tencent.com/
 component: express
 name: asd
 org: orgDemo
@@ -12,6 +15,7 @@ inputs:
   exclude:
     - .env
   apigatewayConf:
+    enableCORS: true
     protocols:
       - http
       - https

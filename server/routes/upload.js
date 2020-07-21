@@ -9,12 +9,17 @@ const queue = []
 async function checkInfo ({ packageName, versionName, res }) {
   const isExist = await AppVersion.findOne({ where: { packageName, versionName } })
   if (isExist) {
-    res.json({ code: -1, msg: '已上传过该版本版本，请勿重复上传' })
+    res.json({ code: -1, msg: '已上传过该版本，请勿重复上传' })
     return false
   }
   const latestVersion = await AppVersion.findOne({ where: { packageName }, order: [['createdAt', 'DESC']] })
   if (latestVersion) {
-    if (compareVersion(versionName, latestVersion.versionName) <= 0) {
+    if (!/[0-9]\.[0-9]\.[0-9]/.test(versionName)) {
+      res.json({ code: -1, msg: '版本号格式不正确，正确示例：1.1.1' })
+      return false
+    }
+    const test = compareVersion(versionName, latestVersion.versionName)
+    if (compareVersion(versionName, latestVersion.versionName) !== 1) {
       res.json({ code: -1, msg: '版本过低，请调整版本号' })
       return false
     }
@@ -24,7 +29,7 @@ async function checkInfo ({ packageName, versionName, res }) {
 
 router.post('/getPolicy', async (req, res) => {
   const { packageName, versionName, fileType } = req.body
-  if (!checkInfo({ packageName, versionName, res })) return
+  if (!await checkInfo({ packageName, versionName, res })) return
 
   const sessionKey = uuidv4()
   queue.push({ ...req.body, sessionKey })
@@ -47,7 +52,7 @@ router.post('/uploadCallback', async (req, res) => {
         await oldApp.save()
       }
 
-      if (!checkInfo()) return
+      if (!await checkInfo()) return
       await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
     } else {
       await AppList.create({ packageName, icon, name })

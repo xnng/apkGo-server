@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const request = axios.create({
   // baseURL: 'https://service-52prhkko-1254232777.gz.apigw.tencentcs.com/release',
-  baseURL: 'http://localhost:3003',
+  baseURL: 'https://service-52prhkko-1254232777.gz.apigw.tencentcs.com/release',
   timeout: 50 * 1000
 })
 
