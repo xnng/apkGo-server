@@ -35,40 +35,36 @@
         </div>
       </div>
     </div>
-    <el-dialog
-      :title="cacheName"
-      :visible.sync="showHistoryDialog"
-      width="800px"
-      v-loading="versionLoading"
-    >
-      <el-table :data="versionList">
-        <el-table-column property="version" align="center" label="版本号" width="160"></el-table-column>
-        <el-table-column property="downLoadCount" align="center" label="下载次数" width="100"></el-table-column>
-        <el-table-column property="updateText" align="center" label="更新日志"></el-table-column>
-        <el-table-column property="createTime" align="center" label="创建时间" width="170"></el-table-column>
-        <el-table-column fixed="right" align="center" label="操作" width="80" property="address">
-          <template slot-scope="scope">
-            <el-button
-              type="text"
-              size="small"
-              icon="el-icon-download"
-              @click="handleDelete(scope.row.id)"
-            >下载</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="pagination">
-        <el-pagination
-          hide-on-single-page
-          background
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage"
-          :page-sizes="[10, 20, 30,40,50]"
-          :page-size="pagination.limit"
-          layout="total, sizes, prev, pager, next"
-          :total="400"
-        ></el-pagination>
+    <el-dialog :title="cacheName" :visible.sync="showHistoryDialog" width="800px">
+      <div v-loading="versionLoading">
+        <el-table :data="versionList">
+          <el-table-column property="version" align="center" label="版本号" width="160"></el-table-column>
+          <el-table-column property="downLoadCount" align="center" label="下载次数" width="100"></el-table-column>
+          <el-table-column property="updateText" align="center" label="更新日志"></el-table-column>
+          <el-table-column property="createTime" align="center" label="创建时间" width="170"></el-table-column>
+          <el-table-column fixed="right" align="center" label="操作" width="80" property="address">
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                size="small"
+                icon="el-icon-download"
+                @click="handleDelete(scope.row.id)"
+              >下载</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="pagination">
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pagination.currentPage"
+            :page-sizes="[5,10, 20, 30,40,50]"
+            :page-size="pagination.limit"
+            layout="total, sizes, prev, pager, next"
+            :total="pagination.total"
+          ></el-pagination>
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -80,16 +76,17 @@ import { getAppList, getVersionList } from '@/api/app'
 import dayjs from 'dayjs'
 
 export default {
+  name: 'home',
   components: { upload },
   data () {
     return {
       showHistoryDialog: false,
       cachePackageName: '',
       cacheName: '',
-      currentPage: '1',
       pagination: {
-        offset: 0,
-        limit: 10
+        currentPage: 1,
+        total: 0,
+        limit: 5
       },
       versionList: [],
       loading: false,
@@ -105,7 +102,7 @@ export default {
     async showHistory (item) {
       this.cachePackageName = item.packageName
       this.cacheName = item.name
-      this.pagination.offset = 0
+      this.pagination.currentPage = 1
       this.historyBtnLoading = true
 
       try {
@@ -115,15 +112,27 @@ export default {
         this.showHistoryDialog = true
       }
     },
+    handleSizeChange (size) {
+      this.pagination.limit = size
+      this.pagination.currentPage = 1
+      this.fetchVersionList()
+    },
+    handleCurrentChange (page) {
+      this.pagination.currentPage = page
+      this.fetchVersionList()
+    },
     async fetchVersionList () {
       this.versionLoading = true
       try {
+        const { currentPage, limit } = this.pagination
         const list = await getVersionList({
           packageName: this.cachePackageName,
-          ...this.pagination
+          limit: limit,
+          offset: (currentPage - 1) * limit
         })
         if (list.data.code === 0) {
-          this.versionList = list.data.data.map(item => ({
+          this.pagination.total = list.data.data.count
+          this.versionList = list.data.data.rows.map(item => ({
             ...item,
             updateText: item.updateText ? item.updateText : '--',
             version: `${item.versionName}（Build ${item.versionCode}）`,
