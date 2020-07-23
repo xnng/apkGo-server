@@ -4,12 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon sls.js"
+    "server:dev": "nodemon sls.js",
+    "dev": "kill -9 $(lsof -i tcp:3003 -t) && nodemon sls.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "ali-oss": "^6.10.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
