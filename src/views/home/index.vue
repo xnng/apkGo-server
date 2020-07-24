@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="upload">
-      <upload @uploadSuccess="refresh" />
+      <upload @uploadSuccess="fetchAppList" />
     </div>
     <el-divider></el-divider>
     <div class="card-container" v-loading="loading">
@@ -48,7 +48,7 @@
                 type="text"
                 size="small"
                 icon="el-icon-download"
-                @click="handleDelete(scope.row.id)"
+                @click="download(scope.row.id)"
               >下载</el-button>
             </template>
           </el-table-column>
@@ -72,7 +72,7 @@
 
 <script>
 import upload from '@/components/upload'
-import { getAppList, getVersionList } from '@/api/app'
+import { getAppList, getVersionList, downloadapp } from '@/api/app'
 import dayjs from 'dayjs'
 
 export default {
@@ -99,6 +99,21 @@ export default {
     this.fetchAppList()
   },
   methods: {
+    async download (id) {
+      this.versionLoading = true
+      try {
+        const result = await downloadapp(id)
+        if (result.data.code === 0) {
+          await this.fetchVersionList()
+          await this.fetchAppList()
+          window.open(result.data.data, '_self')
+        } else {
+          this.$message.error(result.data.msg)
+        }
+      } finally {
+        this.versionLoading = false
+      }
+    },
     async showHistory (item) {
       this.cachePackageName = item.packageName
       this.cacheName = item.name
@@ -132,7 +147,7 @@ export default {
         })
         if (list.data.code === 0) {
           this.pagination.total = list.data.data.count
-          this.versionList = list.data.data.rows.map(item => ({
+          this.versionList = list.data.data.rows.map((item) => ({
             ...item,
             updateText: item.updateText ? item.updateText : '--',
             version: `${item.versionName}（Build ${item.versionCode}）`,
@@ -142,9 +157,6 @@ export default {
       } finally {
         this.versionLoading = false
       }
-    },
-    refresh () {
-      this.fetchAppList()
     },
     async fetchAppList () {
       try {

@@ -127,20 +127,20 @@ export default {
         })
 
         if (sinResult.data.code === 0) {
-          const { ossId, policy, signature, fileName, host, callback } = sinResult.data.data
+          const { ossId, policy, signature, uploadPath, fileName, host, callback } = sinResult.data.data
           const formData = new FormData()
           formData.append('OSSAccessKeyId', ossId)
           formData.append('policy', policy)
           formData.append('signature', signature)
           formData.append('callback', callback)
-          formData.append('key', fileName)
+          formData.append('key', `${uploadPath}${fileName}`)
           formData.append('success_action_status', 200)
           formData.append('file', uploadFile)
           this.progress = 0
           const uploadResult = await request(host, {
             method: 'post',
             data: formData,
-            onUploadProgress: progressEvent => {
+            onUploadProgress: (progressEvent) => {
               const complete = Math.floor((progressEvent.loaded / progressEvent.total) * 100)
               this.progress = complete
             }

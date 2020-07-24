@@ -22,3 +22,10 @@ export function getVersionList (params) {
     url: '/list/getVersionList'
   })
 }
+
+export function downloadapp (id) {
+  return request({
+    method: 'get',
+    url: `/tools/download/${id}`
+  })
+}
