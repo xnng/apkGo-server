@@ -3,6 +3,7 @@ const cors = require('cors')
 const sequelize = require('./models/index')
 const bodyParser = require('body-parser')
 const upload = require('./routes/upload')
+const list = require('./routes/list')
 
 const app = express()
 
@@ -20,4 +21,5 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/upload', upload)
+app.use('/list', list)
 app.listen(3003)

@@ -6,6 +6,44 @@ const AppVersion = require('../models/appVersion')
 
 const queue = []
 
+router.post('/getPolicy', async (req, res) => {
+  const { packageName, versionName, fileType } = req.body
+  if (!await checkInfo({ packageName, versionName, res })) return
+
+  const sessionKey = uuidv4()
+  queue.push({ ...req.body, sessionKey })
+  const sendBody = generageSin(sessionKey, fileType)
+  const cacheItem = queue.find(item => item.sessionKey === sessionKey)
+  cacheItem.downloadUrl = `${sendBody.host}/${sendBody.fileName}`
+
+  res.json({ code: 0, data: sendBody })
+})
+
+router.post('/uploadCallback', async (req, res) => {
+  const cacheQuery = queue.find(item => item.sessionKey === req.body.sessionKey)
+  const { packageName, versionCode, versionName, name, updateText, icon, downloadUrl } = cacheQuery
+  if (!await checkInfo({ packageName, versionName, res })) return
+
+  try {
+    const oldApp = await AppList.findOne({ where: { packageName } })
+    if (oldApp) {
+      if (icon !== oldApp.icon) {
+        oldApp.icon = icon
+        await oldApp.save()
+      }
+
+      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
+    } else {
+      await AppList.create({ packageName, icon, name })
+      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
+    }
+
+    res.json({ code: 0 })
+  } catch (error) {
+    res.json({ code: -1, msg: error.message })
+  }
+})
+
 async function checkInfo ({ packageName, versionName, res }) {
   const isExist = await AppVersion.findOne({ where: { packageName, versionName } })
   if (isExist) {
@@ -26,43 +64,5 @@ async function checkInfo ({ packageName, versionName, res }) {
   }
   return true
 }
-
-router.post('/getPolicy', async (req, res) => {
-  const { packageName, versionName, fileType } = req.body
-  if (!await checkInfo({ packageName, versionName, res })) return
-
-  const sessionKey = uuidv4()
-  queue.push({ ...req.body, sessionKey })
-  const sendBody = generageSin(sessionKey, fileType)
-  const cacheItem = queue.find(item => item.sessionKey === sessionKey)
-  cacheItem.downloadUrl = `${sendBody.host}/${sendBody.fileName}`
-
-  res.json({ code: 0, data: sendBody })
-})
-
-router.post('/uploadCallback', async (req, res) => {
-  const cacheQuery = queue.find(item => item.sessionKey === req.body.sessionKey)
-  const { packageName, versionCode, versionName, name, updateText, icon, downloadUrl } = cacheQuery
-
-  try {
-    const oldApp = await AppList.findOne({ where: { packageName } })
-    if (oldApp) {
-      if (icon !== oldApp.icon) {
-        oldApp.icon = icon
-        await oldApp.save()
-      }
-
-      if (!await checkInfo()) return
-      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
-    } else {
-      await AppList.create({ packageName, icon, name })
-      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
-    }
-
-    res.json({ code: 0 })
-  } catch (error) {
-    res.json({ code: -1, msg: error.message })
-  }
-})
 
 module.exports = router
