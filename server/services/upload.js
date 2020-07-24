@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const { v1: uuidv1 } = require('uuid')
 
 function generageSin (sessionKey, fileType) {
   const { ossId, ossKey, host, cloudBasePath, callbackUrl } = require('../config/app').oss
@@ -15,7 +16,8 @@ function generageSin (sessionKey, fileType) {
 
   const policy = Buffer.from(JSON.stringify(policyString)).toString('base64')
   const signature = crypto.createHmac('sha1', ossKey).update(policy).digest('base64')
-  const fileName = `${cloudBasePath}${new Date().getTime()}.${fileType || 'apk'}`
+  const fileName = `${uuidv1().split('-').join('')}.${fileType || 'apk'}`
+  const uploadPath = cloudBasePath
 
   const callbackStr = {
     callbackUrl,
@@ -24,7 +26,7 @@ function generageSin (sessionKey, fileType) {
   }
   const callbackBase64 = Buffer.from(JSON.stringify(callbackStr)).toString('base64')
 
-  return { ossId, host, policy, signature, fileName, callback: callbackBase64 }
+  return { ossId, host, policy, signature, fileName, uploadPath, callback: callbackBase64 }
 }
 
 function compareVersion (latest, old) {

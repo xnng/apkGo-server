@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const AppList = require('../models/appList')
+  const AppList = require('../models/appList')
 const AppVersion = require('../models/appVersion')
 
 router.get('/getAppList', async (req, res) => {

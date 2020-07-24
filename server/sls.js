@@ -4,6 +4,7 @@ const sequelize = require('./models/index')
 const bodyParser = require('body-parser')
 const upload = require('./routes/upload')
 const list = require('./routes/list')
+const tools = require('./routes/tools')
 
 const app = express()
 
@@ -22,4 +23,5 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/upload', upload)
 app.use('/list', list)
+app.use('/tools', tools)
 app.listen(3003)

@@ -14,14 +14,14 @@ router.post('/getPolicy', async (req, res) => {
   queue.push({ ...req.body, sessionKey })
   const sendBody = generageSin(sessionKey, fileType)
   const cacheItem = queue.find(item => item.sessionKey === sessionKey)
-  cacheItem.downloadUrl = `${sendBody.host}/${sendBody.fileName}`
+  cacheItem.fileName = sendBody.fileName
 
   res.json({ code: 0, data: sendBody })
 })
 
 router.post('/uploadCallback', async (req, res) => {
   const cacheQuery = queue.find(item => item.sessionKey === req.body.sessionKey)
-  const { packageName, versionCode, versionName, name, updateText, icon, downloadUrl } = cacheQuery
+  const { packageName, versionCode, versionName, name, updateText, icon, fileName } = cacheQuery
   if (!await checkInfo({ packageName, versionName, res })) return
 
   try {
@@ -32,10 +32,10 @@ router.post('/uploadCallback', async (req, res) => {
         await oldApp.save()
       }
 
-      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
+      await AppVersion.create({ packageName, versionCode, versionName, updateText, fileName })
     } else {
       await AppList.create({ packageName, icon, name })
-      await AppVersion.create({ packageName, versionCode, versionName, updateText, downloadUrl })
+      await AppVersion.create({ packageName, versionCode, versionName, updateText, fileName })
     }
 
     res.json({ code: 0 })
