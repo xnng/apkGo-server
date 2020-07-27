@@ -1,5 +1,5 @@
 const router = require('express').Router()
-  const AppList = require('../models/appList')
+const AppList = require('../models/appList')
 const AppVersion = require('../models/appVersion')
 
 router.get('/getAppList', async (req, res) => {
@@ -21,6 +21,22 @@ router.get('/getAppList', async (req, res) => {
   } catch (error) {
     res.json({ code: 1, msg: error.message })
   }
+})
+
+router.get('/release/:id', async (req, res) => {
+  const id = req.params.id
+  if (!id) {
+    res.json({ code: -1, msg: '缺少必要参数' })
+  }
+  const versionInfo = await AppVersion.findByPk(id)
+  const appInfo = await AppList.findOne({ where: { packageName: versionInfo.packageName } })
+  res.json({
+    code: 0,
+    data: {
+      ...appInfo.dataValues,
+      versionInfo: versionInfo
+    }
+  })
 })
 
 router.get('/getVersionList', async (req, res) => {
