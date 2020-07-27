@@ -6,6 +6,9 @@
     <el-divider></el-divider>
     <div class="card-container" v-loading="loading">
       <div class="card" v-for="item of appList" :key="item.id">
+        <div class="card-icon">
+          <img :src="require('@/assets/android-white.png')" />
+        </div>
         <img class="card-logo" :src="item.icon" />
         <div class="card-name">{{item.name}}</div>
         <div class="card-desc">
@@ -32,7 +35,13 @@
             :loading="historyBtnLoading"
           >历史版本</el-button>
           <router-link target="_blank" :to="{ path: `/release/${item.app_versions[0].id}` }">
-            <el-button size="mini" plain type="success" icon="el-icon-view">预览</el-button>
+            <el-button
+              size="mini"
+              plain
+              type="success"
+              icon="el-icon-view"
+              style="margin-left:10px"
+            >预览</el-button>
           </router-link>
         </div>
       </div>
@@ -201,6 +210,7 @@ export default {
   box-sizing: border-box;
 }
 .card {
+  position: relative;
   width: 300px;
   cursor: pointer;
   padding: 10px;
@@ -212,6 +222,23 @@ export default {
   box-sizing: border-box;
   transition: all 0.3s;
   box-shadow: 0 0 5px 0 #e7e5e5;
+  &-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 0;
+    width: 0;
+    border-top: 48px solid #a4c639;
+    border-left: 48px solid transparent;
+    & > img {
+      width: 18px;
+      height: 18px;
+      position: absolute;
+      right: 3px;
+      top: -42px;
+      z-index: 2;
+    }
+  }
   &:hover {
     transform: translate3d(0, -5px, 0);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
