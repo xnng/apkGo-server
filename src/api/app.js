@@ -29,3 +29,10 @@ export function downloadapp (id) {
     url: `/tools/download/${id}`
   })
 }
+
+export function getReleaseInfo (id) {
+  return request({
+    method: 'get',
+    url: `/list/release/${id}`
+  })
+}
