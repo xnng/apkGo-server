@@ -8,6 +8,10 @@ const routes = [
   {
     path: '/',
     component: () => import('../views/home')
+  },
+  {
+    path: '/release/:id',
+    component: () => import('../views/release')
   }
 ]
 

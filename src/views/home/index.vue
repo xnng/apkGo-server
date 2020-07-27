@@ -31,7 +31,9 @@
             @click="showHistory(item)"
             :loading="historyBtnLoading"
           >历史版本</el-button>
-          <el-button size="mini" plain type="success" icon="el-icon-view">预览</el-button>
+          <router-link target="_blank" :to="{ path: `/release/${item.app_versions[0].id}` }">
+            <el-button size="mini" plain type="success" icon="el-icon-view">预览</el-button>
+          </router-link>
         </div>
       </div>
     </div>
