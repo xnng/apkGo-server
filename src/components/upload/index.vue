@@ -69,7 +69,6 @@ export default {
   name: 'upload',
   data () {
     return {
-      dialogFormVisible: false,
       progress: 0,
       uploadStatus: 'none',
       uploadModalVisible: false,
@@ -149,7 +148,7 @@ export default {
             this.uploadStatus = 'success'
             this.$message.success('上传成功！')
             this.$emit('uploadSuccess')
-            this.dialogFormVisible = false
+            this.uploadModalVisible = false
           } else {
             throw new Error(uploadResult.data.msg || '上传失败')
           }
