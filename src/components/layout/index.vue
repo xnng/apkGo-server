@@ -14,13 +14,13 @@
         <div class="menu-left">
           <el-menu-item :index="menu.route" v-for="menu of menuLeft" :key="menu.route">{{menu.name}}</el-menu-item>
         </div>
-        <div class="menu-right">
+        <!-- <div class="menu-right">
           <el-menu-item
             :index="menu.route"
             v-for="menu of menuRight"
             :key="menu.route"
           >{{menu.name}}</el-menu-item>
-        </div>
+        </div> -->
       </el-menu>
     </header>
     <section class="content">
@@ -40,27 +40,27 @@ export default {
       menuLeft: [
         {
           route: '/',
-          name: '主页'
-        },
-        {
-          route: '/tools',
-          name: '命令行工具'
-        },
-        {
-          route: '/doc',
-          name: '开放API'
+          name: 'apkGo'
         }
-      ],
-      menuRight: [
-        {
-          route: '/注销',
-          name: '注销'
-        },
-        {
-          route: '/github',
-          name: 'GitHub'
-        }
+        // {
+        //   route: '/tools',
+        //   name: '命令行工具'
+        // },
+        // {
+        //   route: '/doc',
+        //   name: '开放API'
+        // }
       ]
+      // menuRight: [
+      //   {
+      //     route: '/注销',
+      //     name: '注销'
+      //   },
+      //   {
+      //     route: '/github',
+      //     name: 'GitHub'
+      //   }
+      // ]
     }
   },
   methods: {

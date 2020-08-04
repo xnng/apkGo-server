@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Message } from 'element-ui'
 
 const request = axios.create({
   // baseURL: 'https://service-52prhkko-1254232777.gz.apigw.tencentcs.com/release',
@@ -17,6 +18,9 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   function (response) {
+    if (response.data.code === -1) {
+      Message.error(response.data.msg)
+    }
     return response
   },
   function (error) {

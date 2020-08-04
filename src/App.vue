@@ -4,6 +4,16 @@
   </div>
 </template>
 
+<script>
+export default {
+  mounted () {
+    this.$nextTick(() => {
+      document.getElementById('myloading').style.display = 'none'
+    })
+  }
+}
+</script>
+
 <style lang="scss">
 * {
   margin: 0;

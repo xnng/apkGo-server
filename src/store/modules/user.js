@@ -1,10 +1,19 @@
-const initialState = {}
+const initialState = {
+  username: '',
+  token: ''
+}
 
 const state = {
   ...initialState
 }
 
-const mutations = {}
+const mutations = {
+  clear (state) {
+    Object.keys(initialState).forEach((key) => {
+      state[key] = initialState[key]
+    })
+  }
+}
 
 const actions = {}
 

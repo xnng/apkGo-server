@@ -8,7 +8,7 @@
       <img :src="require('@/assets/none.png')" />
       <div class="empty-text">无数据</div>
     </div>
-    <section  v-loading="loading" >
+    <section v-loading="loading">
       <div class="card-container" v-if="appList && appList.length !== 0">
         <div class="card" v-for="item of appList" :key="item.id">
           <div class="card-icon">
