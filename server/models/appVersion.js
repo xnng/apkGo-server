@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const sequelize = require('./index')
+const sequelize = require('./config')
 
 const AppVersion = sequelize.define(
   'app_version',
@@ -27,6 +27,11 @@ const AppVersion = sequelize.define(
       type: Sequelize.BIGINT,
       defaultValue: 0,
       comment: '下载次数'
+    },
+    size: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment: '大小，单位MB'
     },
     versionCode: {
       type: Sequelize.BIGINT,

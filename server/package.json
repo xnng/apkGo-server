@@ -11,11 +11,12 @@
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "@alicloud/pop-core": "^1.7.9",
     "ali-oss": "^6.10.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "dayjs": "^1.8.28",
+    "dayjs": "^1.8.33",
     "express": "^4.17.1",
     "mysql2": "^2.1.0",
     "sequelize": "^6.3.2",

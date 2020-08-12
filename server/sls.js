@@ -1,10 +1,10 @@
 const express = require('express')
 const cors = require('cors')
-const sequelize = require('./models/index')
+const sequelize = require('./models/config')
 const bodyParser = require('body-parser')
-const upload = require('./routes/upload')
-const list = require('./routes/list')
-const tools = require('./routes/tools')
+const apk = require('./routes/apk')
+// const user = require('./routes/user')
+const errorMiddleware = require('./middlewares/error')
 
 const app = express()
 
@@ -20,8 +20,7 @@ sequelize
 app.use(cors({ credentials: true, origin: '*' }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-
-app.use('/upload', upload)
-app.use('/list', list)
-app.use('/tools', tools)
+app.use('/apk', apk)
+app.use(errorMiddleware)
+// app.use('/user', user)
 app.listen(3003)
