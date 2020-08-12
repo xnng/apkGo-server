@@ -1,13 +1,16 @@
 {
-  "name": "cd-client",
+  "name": "apk-go",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "analyz": "cross-env OPEN_REPORT=true yarn build",
+    "deploy": "yarn build && node upload.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "ali-oss": "^6.10.0",
     "app-info-parser": "^0.3.10",
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
@@ -26,6 +29,7 @@
     "@vue/cli-service": "~4.4.0",
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.2",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
@@ -35,7 +39,8 @@
     "lint-staged": "^9.5.0",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.2",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-analyzer": "^3.8.0"
   },
   "eslintConfig": {
     "root": true,
