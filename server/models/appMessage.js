@@ -10,7 +10,7 @@ const AppMessage = sequelize.define(
       autoIncrement: true
     },
     phone: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
       comment: '手机号'
     },
     code: {

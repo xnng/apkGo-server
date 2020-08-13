@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "server:dev": "nodemon sls.js",
-    "dev": "kill -9 $(lsof -i tcp:3003 -t) && nodemon sls.js"
+    "server:dev": "node sls.js",
+    "dev": "kill -9 $(lsof -i tcp:3003 -t) && node sls.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
