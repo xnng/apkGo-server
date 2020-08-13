@@ -1,7 +1,8 @@
 const router = require('express').Router()
+const fs = require('fs')
+const path = require('path')
 const { sendCode, validateCode } = require('../services/user')
-
-const AppMessage = require('../models/appMessage')
+const { getPublicKey } = require('../utils/rsa')
 
 router.get('/sendCode', async (req, res) => {
   if (!req.query.phone) {
@@ -26,6 +27,16 @@ router.post('/validateCode', async (req, res) => {
   } else {
     res.json({ code: 0 })
   }
+})
+
+router.get('/getRSA', async (req, res) => {
+  const publicKey = getPublicKey
+  res.json({ code: 0, data: publicKey })
+})
+
+router.post('/register', async (req, res) => {
+  const { phone, nickName, code, password } = req.body
+
 })
 
 module.exports = router
