@@ -1,75 +1,26 @@
 {
-  "name": "apk-go",
-  "version": "0.1.0",
-  "private": true,
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "analyz": "cross-env OPEN_REPORT=true yarn build",
-    "deploy": "yarn build && node upload.js",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "ali-oss": "^6.10.0",
-    "app-info-parser": "^0.3.10",
-    "axios": "^0.19.2",
-    "core-js": "^3.6.5",
-    "dayjs": "^1.8.29",
-    "element-ui": "^2.13.2",
-    "vue": "^2.6.11",
-    "vue-router": "^3.2.0",
-    "vuex": "^3.4.0",
-    "vuex-persistedstate": "^3.0.1"
+    "server:dev": "kill -9 $(lsof -i tcp:3003 -t) && node sls.js",
+    "dev": "nodemon sls.js"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.4.0",
-    "@vue/cli-plugin-eslint": "~4.4.0",
-    "@vue/cli-plugin-router": "~4.4.0",
-    "@vue/cli-plugin-vuex": "~4.4.0",
-    "@vue/cli-service": "~4.4.0",
-    "@vue/eslint-config-standard": "^5.1.2",
-    "babel-eslint": "^10.1.0",
-    "cross-env": "^7.0.2",
-    "eslint": "^6.7.2",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^6.2.2",
-    "lint-staged": "^9.5.0",
-    "node-sass": "^4.12.0",
-    "sass-loader": "^8.0.2",
-    "vue-template-compiler": "^2.6.11",
-    "webpack-bundle-analyzer": "^3.8.0"
+    "nodemon": "^2.0.4"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/standard"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {
-      "no-unused-vars": "off"
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ],
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,jsx,vue}": [
-      "vue-cli-service lint",
-      "git add"
-    ]
+  "dependencies": {
+    "@alicloud/pop-core": "^1.7.9",
+    "ali-oss": "^6.10.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dayjs": "^1.8.33",
+    "express": "^4.17.1",
+    "mysql2": "^2.1.0",
+    "sequelize": "^6.3.2",
+    "short-id": "^0.1.0-1",
+    "uuid": "^8.2.0"
   }
 }

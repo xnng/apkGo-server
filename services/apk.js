@@ -23,7 +23,7 @@ exports.getAppList = async () => {
 }
 
 exports.getOneApp = async (id) => {
-  console.log("exports.getOneApp -> id", id)
+  console.log('exports.getOneApp -> id', id)
   const versionInfo = await Model.AppVersion.findByPk(id)
   if (versionInfo) {
     const appInfo = await Model.AppList.findOne({ where: { packageName: versionInfo.packageName } })
