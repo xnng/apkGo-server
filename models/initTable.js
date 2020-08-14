@@ -1,13 +1,13 @@
-const AppList = require('./appList')
-const AppVersion = require('./appVersion')
-const AppMessage = require('./appMessage')
+const AppList = require('./appList');
+const AppVersion = require('./appVersion');
+const AppMessage = require('./appMessage');
 
-// AppList.sync({
-//   force: true
-// })
-// AppVersion.sync({
-//   force: true
-// })
+AppList.sync({
+  force: false,
+});
+AppVersion.sync({
+  force: false,
+});
 AppMessage.sync({
-  force: true
-})
+  force: false,
+});

@@ -1,42 +1,41 @@
-const router = require('express').Router()
-const fs = require('fs')
-const path = require('path')
-const { sendCode, validateCode } = require('../services/user')
-const { getPublicKey } = require('../utils/rsa')
+const router = require('express').Router();
+const { sendCode, validateCode } = require('../services/user');
+const { getPublicKey } = require('../utils/rsa');
 
 router.get('/sendCode', async (req, res) => {
   if (!req.query.phone) {
-    res.json({ code: -1, msg: '缺少必要参数' })
+    res.json({ code: -1, msg: '缺少必要参数' });
   }
-  const result = await sendCode(req.query.phone)
+  const result = await sendCode(req.query.phone);
   if (result.type !== 'success') {
-    res.json({ code: -1, msg: result.msg })
+    res.json({ code: -1, msg: result.msg });
   } else {
-    res.json({ code: 0 })
+    res.json({ code: 0 });
   }
-})
+});
 
 router.post('/validateCode', async (req, res) => {
-  const { phone, code } = req.body
+  const { phone, code } = req.body;
   if (!phone || !code) {
-    res.json({ code: -1, msg: '缺少必要参数' })
+    res.json({ code: -1, msg: '缺少必要参数' });
   }
-  const result = await validateCode(req.body)
-  if (result.type == 'fail') {
-    res.json({ code: -1, msg: result.msg })
+  const result = await validateCode(req.body);
+  if (result.type === 'fail') {
+    res.json({ code: -1, msg: result.msg });
   } else {
-    res.json({ code: 0 })
+    res.json({ code: 0 });
   }
-})
+});
 
 router.get('/getRSA', async (req, res) => {
-  const publicKey = getPublicKey
-  res.json({ code: 0, data: publicKey })
-})
+  const publicKey = getPublicKey;
+  res.json({ code: 0, data: publicKey });
+});
 
-router.post('/register', async (req, res) => {
-  const { phone, nickName, code, password } = req.body
+// router.post('/register', async (req, res) => {
+//   const {
+//     phone, nickName, code, password,
+//   } = req.body;
+// });
 
-})
-
-module.exports = router
+module.exports = router;
