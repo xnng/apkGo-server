@@ -1,22 +1,28 @@
 # https://github.com/serverless-components/tencent-express/blob/master/docs/configure.md
 # https://cloud.tencent.com/document/product/1154/41775
 # https://serverless.cloud.tencent.com/
+# https://service-qkxnd3t0-1254232777.gz.apigw.tencentcs.com/test/
 component: express
-name: asd
-org: orgDemo
-app: appDemo
+name: apkGo
+org: xnng
+app: apkGo
 stage: dev
 
 inputs:
   src: ./
-  functionName: asd
+  functionName: apkGo
   region: ap-guangzhou
-  runtime: Nodejs10.15
+  runtime: Nodejs12.16
   exclude:
     - .env
+  functionConf:
+    timeout: 10
+    environment:
+      variables:
+        NODE_ENV: development
   apigatewayConf:
     enableCORS: true
     protocols:
       - http
       - https
-    environment: release
+    environment: test
