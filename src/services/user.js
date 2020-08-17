@@ -34,7 +34,7 @@ const validateCode = async ({ phone, code }) => {
   if (existCode.length === 0) {
     return { type: 'fail', msg: '验证码错误' };
   }
-  const validateResult = existCode.filter((item) => (requestTime - item.sendTime < 10 * 60 * 1000));
+  const validateResult = existCode.filter((item) => requestTime - item.sendTime < 10 * 60 * 1000);
   if (validateResult.length !== 0) {
     return { type: 'success' };
   }
@@ -56,11 +56,23 @@ exports.register = async ({
     const originPassword = encode(password);
     const md5Password = passwordToMD5(originPassword);
     await Model.User.create({
-      phone, nickName, password: md5Password, userId: uuidv4(),
+      phone,
+      nickName,
+      password: md5Password,
+      userId: uuidv4(),
     });
     return { type: 'success', msg: '注册成功' };
   } catch (error) {
     return { type: 'fail', msg: error.message };
+  }
+};
+
+exports.login = async ({ phone, code, password }) => {
+  if (code) {
+    const validatePhone = await validateCode({ phone, code });
+    if (validatePhone.type === 'fail') {
+      return validatePhone;
+    }
   }
 };
 
