@@ -1,6 +1,0 @@
-oss:
-  ossId: 'LTAI4GB9ab2eFNrgNtUS8fdb'
-  ossKey: 'aXrDQVlxQAikegc2mfYYZq26tcqjzp'
-  cloudBasePath: 'apk/'
-  host: 'https://private-xnng.oss-cn-shanghai.aliyuncs.com'
-  callbackUrl: 'http://ali.xnngs.cn:3003/apk/upload/callback'

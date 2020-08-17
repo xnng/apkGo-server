@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { sendCode, validateCode } = require('../services/user');
+const { sendCode, validateCode, register } = require('../services/user');
 const { getPublicKey } = require('../utils/rsa');
 
 router.get('/sendCode', async (req, res) => {
@@ -32,10 +32,13 @@ router.get('/getRSA', async (req, res) => {
   res.json({ code: 0, data: publicKey });
 });
 
-// router.post('/register', async (req, res) => {
-//   const {
-//     phone, nickName, code, password,
-//   } = req.body;
-// });
+router.post('/register', async (req, res) => {
+  const result = await register(req.body);
+  if (result.type === 'fail') {
+    res.json({ code: -1, msg: result.msg });
+  } else {
+    res.json({ code: 0 });
+  }
+});
 
 module.exports = router;

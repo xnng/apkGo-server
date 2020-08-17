@@ -2,6 +2,7 @@ const sequelize = require('./config');
 const AppList = require('./appList');
 const AppMessage = require('./appMessage');
 const AppVersion = require('./appVersion');
+const User = require('./user');
 
 const initSequelize = () => {
   sequelize
@@ -10,6 +11,7 @@ const initSequelize = () => {
       AppList.sync({ force: false });
       AppVersion.sync({ force: false });
       AppMessage.sync({ force: false });
+      User.sync({ force: false });
     })
     .catch((err) => {
       // eslint-disable-next-line no-console
@@ -21,5 +23,6 @@ module.exports = {
   AppList,
   AppVersion,
   AppMessage,
+  User,
   initSequelize,
 };
