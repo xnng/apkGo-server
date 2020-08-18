@@ -9,11 +9,7 @@ router.get('/sendCode', async (req, res) => {
     res.json({ code: -1, msg: '缺少必要参数' });
   }
   const result = await sendCode(req.query.phone);
-  if (result.type !== 'success') {
-    res.json({ code: -1, msg: result.msg });
-  } else {
-    res.json({ code: 0 });
-  }
+  res.json(result);
 });
 
 router.post('/validateCode', async (req, res) => {
@@ -22,11 +18,7 @@ router.post('/validateCode', async (req, res) => {
     res.json({ code: -1, msg: '缺少必要参数' });
   }
   const result = await validateCode(req.body);
-  if (result.type === 'fail') {
-    res.json({ code: -1, msg: result.msg });
-  } else {
-    res.json({ code: 0 });
-  }
+  res.json(result);
 });
 
 router.get('/getRSA', async (req, res) => {
@@ -43,11 +35,7 @@ router.get('/getRSA', async (req, res) => {
  */
 router.post('/register', async (req, res) => {
   const result = await register(req.body);
-  if (result.type === 'fail') {
-    res.json({ code: -1, msg: result.msg });
-  } else {
-    res.json({ code: 0 });
-  }
+  res.json(result);
 });
 
 /**
@@ -58,11 +46,7 @@ router.post('/register', async (req, res) => {
  */
 router.post('/login', async (req, res) => {
   const result = await login(req.body);
-  if (result.type === 'fail') {
-    res.json({ code: -1, msg: result.msg });
-  } else {
-    res.json({ code: 0 });
-  }
+  res.json(result);
 });
 
 module.exports = router;
