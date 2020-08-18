@@ -22,7 +22,7 @@ router.post('/validateCode', async (req, res) => {
 });
 
 router.get('/getRSA', async (req, res) => {
-  const publicKey = getPublicKey;
+  const publicKey = getPublicKey();
   res.json({ code: 0, data: publicKey });
 });
 
